@@ -99,7 +99,7 @@
             // 
             this.pbAppDK.BackColor = System.Drawing.SystemColors.ActiveCaption;
             this.pbAppDK.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.pbAppDK.Image = ((System.Drawing.Image)(resources.GetObject("pbAppDK.Image")));
+            this.pbAppDK.Image = global::DangNHap.Properties.Resources.medicine;
             this.pbAppDK.InitialImage = ((System.Drawing.Image)(resources.GetObject("pbAppDK.InitialImage")));
             this.pbAppDK.Location = new System.Drawing.Point(246, 21);
             this.pbAppDK.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);

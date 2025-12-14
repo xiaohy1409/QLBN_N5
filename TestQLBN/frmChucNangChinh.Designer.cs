@@ -153,7 +153,7 @@
             this.btnThem.Name = "btnThem";
             this.btnThem.Size = new System.Drawing.Size(223, 45);
             this.btnThem.TabIndex = 5;
-            this.btnThem.Text = "THÊM VÀO HÀNG ĐỢI";
+            this.btnThem.Text = "➕ Thêm vào hàng đợi";
             this.btnThem.UseVisualStyleBackColor = false;
             this.btnThem.Click += new System.EventHandler(this.btnThem_Click);
             // 
@@ -258,7 +258,7 @@
             this.groupBox2.Font = new System.Drawing.Font("Segoe UI", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox2.Location = new System.Drawing.Point(0, 0);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(925, 452);
+            this.groupBox2.Size = new System.Drawing.Size(926, 452);
             this.groupBox2.TabIndex = 0;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Danh sách chờ khám";
@@ -287,9 +287,8 @@
             this.dgvDanhSach.RowHeadersWidth = 51;
             this.dgvDanhSach.RowTemplate.Height = 24;
             this.dgvDanhSach.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dgvDanhSach.Size = new System.Drawing.Size(919, 384);
+            this.dgvDanhSach.Size = new System.Drawing.Size(920, 384);
             this.dgvDanhSach.TabIndex = 0;
-            this.dgvDanhSach.SelectionChanged += new System.EventHandler(this.dgvDanhSach_SelectionChanged);
             // 
             // txtTimKiem
             // 
@@ -307,11 +306,11 @@
             this.btnGoiKham.FlatAppearance.BorderSize = 0;
             this.btnGoiKham.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnGoiKham.ForeColor = System.Drawing.Color.WhiteSmoke;
-            this.btnGoiKham.Location = new System.Drawing.Point(31, 51);
+            this.btnGoiKham.Location = new System.Drawing.Point(17, 51);
             this.btnGoiKham.Name = "btnGoiKham";
-            this.btnGoiKham.Size = new System.Drawing.Size(117, 36);
+            this.btnGoiKham.Size = new System.Drawing.Size(151, 36);
             this.btnGoiKham.TabIndex = 1;
-            this.btnGoiKham.Text = "Gọi Khám";
+            this.btnGoiKham.Text = "📢 Gọi Khám";
             this.btnGoiKham.UseVisualStyleBackColor = false;
             this.btnGoiKham.Click += new System.EventHandler(this.btnGoiKham_Click);
             // 
@@ -323,11 +322,11 @@
             this.btnXoa.FlatAppearance.BorderSize = 0;
             this.btnXoa.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnXoa.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.btnXoa.Location = new System.Drawing.Point(185, 51);
+            this.btnXoa.Location = new System.Drawing.Point(186, 51);
             this.btnXoa.Name = "btnXoa";
             this.btnXoa.Size = new System.Drawing.Size(122, 36);
             this.btnXoa.TabIndex = 2;
-            this.btnXoa.Text = "Xóa";
+            this.btnXoa.Text = "❌ Xóa";
             this.btnXoa.UseVisualStyleBackColor = false;
             this.btnXoa.Click += new System.EventHandler(this.btnXoa_Click);
             // 
@@ -340,7 +339,7 @@
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel2.Location = new System.Drawing.Point(394, 0);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(925, 636);
+            this.panel2.Size = new System.Drawing.Size(926, 636);
             this.panel2.TabIndex = 1;
             // 
             // groupBox4
@@ -352,7 +351,7 @@
             this.groupBox4.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox4.Location = new System.Drawing.Point(0, 452);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(369, 184);
+            this.groupBox4.Size = new System.Drawing.Size(370, 184);
             this.groupBox4.TabIndex = 3;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "MENU Chức Năng";
@@ -381,7 +380,7 @@
             // 
             this.panel3.Controls.Add(this.groupBox3);
             this.panel3.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel3.Location = new System.Drawing.Point(369, 452);
+            this.panel3.Location = new System.Drawing.Point(370, 452);
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(556, 184);
             this.panel3.TabIndex = 2;
@@ -482,7 +481,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 24F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(1319, 636);
+            this.ClientSize = new System.Drawing.Size(1320, 636);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
             this.Font = new System.Drawing.Font("Microsoft YaHei", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
