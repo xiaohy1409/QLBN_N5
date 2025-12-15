@@ -51,37 +51,57 @@ namespace DangNHap
         // Doc danh sach account tu file
         private List<(string username, string password)> ReadAccounts()
         {
-            var accounts = new List<(string, string)>();
+            List<(string username, string password)> accounts =
+                new List<(string username, string password)>();
 
             if (!File.Exists(path))
                 return accounts;
 
             string[] lines = File.ReadAllLines(path);
 
-            foreach (string line in lines)
+            for (int i = 0; i < lines.Length; i++)
             {
-                if (string.IsNullOrWhiteSpace(line)) continue;
-
+                string line = lines[i];
+                if (line == null || line.Length == 0)
+                    continue;
                 string[] parts = line.Split(' ');
-                if (parts.Length != 2) continue;
-
+                if (parts.Length != 2)
+                    continue;
                 accounts.Add((parts[0], parts[1]));
             }
-
             return accounts;
         }
 
-        // Kiem tra chuoi khong chua dau cach
-        private bool CheckNoSpace(string text)
+        private bool KiemTraRongVaDauCach(string text)
         {
-            return !string.IsNullOrWhiteSpace(text) && !text.Contains(" ");
+            // 1. Kiem tra chuoi co NULL khong
+            if (text == null)
+                return false;
+            // 2. Kiem tra chuoi co rong khong
+            if (text.Length == 0)
+                return false;
+            // 3. Kiem tra chuoi co dau cach khong
+            for (int i = 0; i < text.Length; i++)
+            {
+                if (text[i] == ' ')
+                    return false;
+            }
+            return true;
         }
 
-        // Kiem tra dang nhap hop le
-        private bool LoginValid(string username, string password)
+        private bool KiemTraTaiKhoanVaMatKhau(string username, string password)
         {
-            var accounts = ReadAccounts();
-            return accounts.Any(a => a.username == username && a.password == password);
+            List<(string username, string password)> accounts = ReadAccounts();
+
+            for (int i = 0; i < accounts.Count; i++)
+            {
+                if (accounts[i].username == username &&
+                    accounts[i].password == password)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         // CheckBox hien/an mat khau
@@ -112,22 +132,29 @@ namespace DangNHap
             string username = txtTK.Text.Trim();
             string password = txtMK.Text.Trim();
 
-            // Kiem tra thong tin rong
-            if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
+            if (!KiemTraRongVaDauCach(username))
             {
-                MessageBox.Show("Bạn nhập chưa đủ thông tin", "Thông báo");
+                MessageBox.Show(
+                    "Tên tài khoản không được rỗng hoặc chứa dấu cách",
+                    "Thông báo",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning
+                );
                 return;
             }
 
-            // Kiem tra dau cach
-            if (!CheckNoSpace(username) || !CheckNoSpace(password))
+            if (!KiemTraRongVaDauCach(password))
             {
-                MessageBox.Show("Tên tài khoản và mật khẩu không được chứa dấu cách", "Thông báo");
+                MessageBox.Show(
+                    "MẬt khẩu không được rỗng hoặc chứa dấu cách",
+                    "Thông báo",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning
+                );
                 return;
             }
 
-            // Kiem tra dang nhap
-            if (LoginValid(username, password))
+            if (KiemTraTaiKhoanVaMatKhau(username, password))
             {
                 MessageBox.Show("Đăng nhập thành công!", "Thông báo");
 

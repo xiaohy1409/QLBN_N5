@@ -14,7 +14,7 @@ namespace ChucNangChinh
         public frmChucNangChinh()
         {
             InitializeComponent();
-            KhoiTaoGiaoDien(); 
+            KhoiTaoGiaoDien();
             CapNhatThongKe();
 
         }
@@ -23,7 +23,7 @@ namespace ChucNangChinh
         private void frmChucNangChinh_Load(object sender, EventArgs e)
         {
             KhoiTaoGiaoDien();
-            CapNhatThongKe();
+            MoDuLieu();
             dgvDanhSach.ClearSelection();
         }
 
@@ -72,9 +72,34 @@ namespace ChucNangChinh
             ToolTip tt = new ToolTip();
             tt.IsBalloon = true;
             tt.ToolTipIcon = ToolTipIcon.Info;
-            tt.SetToolTip(numUuTien, "Số càng nhỏ độ ưu tiên càng cao (0 là ưu tiên nhất)");
+
+            // Giới hạn độ ưu tiên từ 0 đến 7
+            numUuTien.Minimum = 1;
+            numUuTien.Maximum = 7;
+            numUuTien.Value = 1;
+            numUuTien.ReadOnly = true;
+
+            // Tooltip mô tả chi tiết mức ưu tiên
+            tt.SetToolTip(numUuTien,
+                "1: Người bệnh trong tình trạng cấp cứu\n" +
+                "2: Trẻ em dưới 06 tuổi\n" +
+                "3: Phụ nữ có thai\n" +
+                "4: Người khuyết tật đặc biệt nặng\n" +
+                "5: Người khuyết tật nặng\n" +
+                "6: Người từ đủ 75 tuổi trở lên\n" +
+                "7: Người có công với cách mạng"
+            );
+
             tt.SetToolTip(cbbKhoa, "Chọn khoa chuyên môn cần khám");
             tt.SetToolTip(btnGoiKham, "Hệ thống sẽ gọi bệnh nhân có độ ưu tiên cao nhất");
+            tt.SetToolTip(btnSua, "Chọn một dòng trong danh sách rồi bấm nút này để sửa thông tin");
+
+            // Cấu hình thời gian chỉ cho chọn ngày giờ sau hiện tại
+            dtpNgayKham.Format = DateTimePickerFormat.Custom;
+            dtpNgayKham.CustomFormat = "dd/MM/yyyy HH:mm";
+            dtpNgayKham.ShowUpDown = true;
+            // Đặt MinDate là ngày giờ hiện tại
+            dtpNgayKham.MinDate = DateTime.Now;
         }
 
         // Hàm định dạng nút bấm
@@ -121,14 +146,7 @@ namespace ChucNangChinh
         {
             if (string.IsNullOrWhiteSpace(txtMa.Text) || string.IsNullOrWhiteSpace(txtTen.Text))
             {
-                MessageBox.Show("Vui lòng nhập Mã và Tên bệnh nhân!", "Thiếu thông tin");
-                return;
-            }
-
-            if (hangDoi.ContainsMaSo(txtMa.Text))
-            {
-                MessageBox.Show($"Mã số '{txtMa.Text}' đã tồn tại trong danh sách chờ!", "Trùng mã số");
-                txtMa.Focus();
+                MessageBox.Show("Vui lòng nhập đầy đủ Mã và Tên bệnh nhân!", "Thiếu thông tin", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -140,23 +158,48 @@ namespace ChucNangChinh
                 (int)numUuTien.Value
             );
 
-            hangDoi.Enqueue(bn);
-            HienThiLenBang();
-            CapNhatThongKe();
-
-            if (dgvDanhSach.Rows.Count > 0)
+            if (string.IsNullOrEmpty(maDangSua))
             {
-                dgvDanhSach.ClearSelection();
-                dgvDanhSach.Rows[dgvDanhSach.Rows.Count - 1].Selected = true;
+                if (hangDoi.ContainsMaSo(txtMa.Text))
+                {
+                    MessageBox.Show($"Mã số '{txtMa.Text}' đã tồn tại!", "Trùng mã số", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    txtMa.Focus();
+                    return;
+                }
+
+                hangDoi.Enqueue(bn);
+                MessageBox.Show("Thêm mới thành công!");
             }
+            else
+            {
+                bool daXoa = hangDoi.RemoveByMaSo(maDangSua);
+
+                if (!daXoa)
+                {
+                    MessageBox.Show("Lỗi: Không tìm thấy dữ liệu gốc để sửa!", "Lỗi dữ liệu", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                hangDoi.Enqueue(bn);
+
+                MessageBox.Show("Cập nhật thông tin thành công!");
+
+                maDangSua = "";          
+                txtMa.Enabled = true;     
+                btnThem.Text = "THÊM BỆNH NHÂN";
+                btnThem.BackColor = Color.FromArgb(0, 122, 204);
+            }
+
+            HienThiLenBang(txtTimKiem.Text);
+            CapNhatThongKe();
 
             txtMa.Clear();
             txtTen.Clear();
-            txtMa.Focus();
-            daThayDoiDuLieu = true;
+            dtpNgayKham.Value = DateTime.Now;
+            numUuTien.Value = 0;
+            daThayDoiDuLieu = true; 
         }
 
-        // Sự kiện gọi khám (Dequeue theo ưu tiên)
         private void btnGoiKham_Click(object sender, EventArgs e)
         {
             if (hangDoi.IsEmpty())
@@ -250,17 +293,17 @@ namespace ChucNangChinh
         void CapNhatThongKe()
         {
             int tongSo = 0;
-            int uuTienCao = 0;
+            int uuTienCao = 1;
 
             Node current = hangDoi.GetHead();
             while (current != null)
             {
                 tongSo++;
-                if (current.Data.DoUuTien == 0) uuTienCao++;
+                if (current.Data.DoUuTien == 1) uuTienCao++;
                 current = current.Next;
             }
 
-            lblThongKe.Text = $"Tổng số chờ: {tongSo} | Ưu tiên cao (Mức 0): {uuTienCao}";
+            lblThongKe.Text = $"Tổng số chờ: {tongSo} | Ưu tiên cao (Mức 1): {uuTienCao}";
         }
 
         // Sự kiện tìm kiếm
@@ -268,32 +311,6 @@ namespace ChucNangChinh
         {
             HienThiLenBang(txtTimKiem.Text);
         }
-
-        // Sự kiện chọn dòng trên bảng (đổ dữ liệu về ô nhập)
-        //private void dgvDanhSach_SelectionChanged(object sender, EventArgs e)
-        //{
-        //    if (dgvDanhSach.SelectedRows.Count > 0)
-        //    {
-        //        DataGridViewRow row = dgvDanhSach.SelectedRows[0];
-
-        //        txtMa.Text = row.Cells[0].Value.ToString();
-        //        txtTen.Text = row.Cells[1].Value.ToString();
-        //        dtpNgayKham.Value = DateTime.ParseExact(row.Cells[2].Value.ToString(), "dd/MM/yyyy HH:mm", null);
-        //        cbbKhoa.Text = row.Cells[3].Value.ToString();
-        //        numUuTien.Value = int.Parse(row.Cells[4].Value.ToString());
-
-        //        maDangSua = txtMa.Text;
-        //    }
-        //    else
-        //    {
-        //        txtMa.Clear();
-        //        txtTen.Clear();
-        //        dtpNgayKham.Value = DateTime.Now;
-        //        cbbKhoa.SelectedIndex = 0;
-        //        numUuTien.Value = 0;
-        //        maDangSua = "";
-        //    }
-        //}
 
         // Sự kiện lưu file
         private void btnLuu_Click(object sender, EventArgs e)
@@ -319,12 +336,13 @@ namespace ChucNangChinh
             daThayDoiDuLieu = false;
         }
 
-        // Sự kiện mở file
-        private void btnMo_Click(object sender, EventArgs e)
+        //hàm mở file và hiển thị lên bảng
+
+        private void MoDuLieu()
         {
             if (!File.Exists("data.txt"))
             {
-                MessageBox.Show("Chưa có dữ liệu nào được lưu trước đó!");
+                //MessageBox.Show("Chưa có dữ liệu nào được lưu trước đó!");
                 return;
             }
 
@@ -346,7 +364,6 @@ namespace ChucNangChinh
                     hangDoi.Enqueue(bn);
                 }
             }
-
             HienThiLenBang(txtTimKiem.Text);
             CapNhatThongKe();
 
@@ -354,14 +371,84 @@ namespace ChucNangChinh
             dgvDanhSach.ClearSelection();
             dgvDanhSach.CurrentCell = null;
 
-            MessageBox.Show("Đã tải dữ liệu xong!");
             daThayDoiDuLieu = false;
+        }
+
+        // Sự kiện mở file
+        private void btnMo_Click(object sender, EventArgs e)
+        {
+           MoDuLieu();
+        }
+
+        private void cbbKhoa_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (cbbKhoa.Text == "Cấp cứu")
+            {
+                numUuTien.Value = 1;
+                numUuTien.Enabled = false;
+            }
+            else
+            {
+                numUuTien.Enabled = true;
+            }
+        }
+
+        private void btnSua_Click(object sender, EventArgs e)
+        {
+            if (dgvDanhSach.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Vui lòng chọn một bệnh nhân trên bảng để sửa!",
+                                "Chưa chọn dòng",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Warning);
+                return;
+            }
+            DataGridViewRow row = dgvDanhSach.SelectedRows[0];
+
+            txtMa.Text = row.Cells[0].Value.ToString();
+            txtTen.Text = row.Cells[1].Value.ToString();
+
+            dtpNgayKham.MinDate = DateTime.ParseExact(row.Cells[2].Value.ToString(), "dd/MM/yyyy HH:mm", null);
+
+            // 2. Lấy chuỗi từ bảng
+            string chuoiNgay = row.Cells[2].Value.ToString();
+            DateTime ketQua;
+
+            bool thanhCong = DateTime.TryParseExact(
+                chuoiNgay,
+                "dd/MM/yyyy HH:mm",
+                System.Globalization.CultureInfo.InvariantCulture,
+                System.Globalization.DateTimeStyles.None,
+                out ketQua
+            );
+
+            if (thanhCong)
+            {
+                dtpNgayKham.Value = ketQua;
+            }
+            else
+            {
+                dtpNgayKham.Value = DateTime.Now; 
+            }
+
+            cbbKhoa.Text = row.Cells[3].Value.ToString();
+            numUuTien.Value = int.Parse(row.Cells[4].Value.ToString());
+
+            maDangSua = txtMa.Text; 
+            txtMa.Enabled = false;  
+
+            btnThem.Text = "CẬP NHẬT";
+            btnThem.BackColor = Color.Orange; 
+        }
+
+        private void frmChucNangChinh_Shown(object sender, EventArgs e)
+        {
+            MessageBox.Show("Đã tải dữ liệu xong!");
         }
     }
 
 
     // --- KHU VỰC CẤU TRÚC DỮ LIỆU ---
-
     public class BenhNhan
     {
         public string MaSo { get; set; }
@@ -403,6 +490,26 @@ namespace ChucNangChinh
             }
             return false;
         }
+        private bool HigherPrio(BenhNhan a, BenhNhan b)
+        {
+            // TRUE thì người a có độ ưu tiên cao hơn người b
+            // FALSE thì người b có độ ưu tiên cao hơn người a
+
+            // 1. So sánh ngày
+            if (a.NgayGio.Date < b.NgayGio.Date) return true;
+            if (a.NgayGio.Date > b.NgayGio.Date) return false;
+
+            // 2. So sánh độ ưu tiên
+            if (a.DoUuTien < b.DoUuTien) return true;
+            if (a.DoUuTien > b.DoUuTien) return false;
+
+            // 3. So sánh giờ, phút, giây
+            if (a.NgayGio.TimeOfDay < b.NgayGio.TimeOfDay) return true;
+            if (a.NgayGio.TimeOfDay > b.NgayGio.TimeOfDay) return false;
+
+            // 4. Bằng nhau hết thì FIFO
+            return false;
+        }
 
         // Thêm vào hàng đợi (Enqueue)
         public void Enqueue(BenhNhan bn)
@@ -411,56 +518,37 @@ namespace ChucNangChinh
             if (head == null)
             {
                 head = tail = newNode;
+                return;
             }
-            else
+            if (HigherPrio(newNode.Data, head.Data))
             {
-                tail.Next = newNode;
-                tail = newNode;
+                newNode.Next = head;
+                head = newNode;
+                return;
             }
+
+            // Case 3: insert in middle or end
+            Node current = head;
+            while (current.Next != null &&
+                   !HigherPrio(newNode.Data, current.Next.Data))
+            {
+                current = current.Next;
+            }
+            newNode.Next = current.Next;
+            current.Next = newNode;
+            if (newNode.Next == null) tail = newNode;
         }
 
         // Lấy ra theo độ ưu tiên (DequeuePriority)
         public BenhNhan DequeuePriority()
         {
             if (head == null) return null;
-
-            Node current = head;
-            Node prev = null;
-            Node maxPrioNode = head;
-            Node prevMaxPrioNode = null;
-            int minPrioValue = head.Data.DoUuTien;
-
-            while (current != null)
-            {
-                if (current.Data.DoUuTien < minPrioValue)
-                {
-                    minPrioValue = current.Data.DoUuTien;
-                    maxPrioNode = current;
-                    prevMaxPrioNode = prev;
-                }
-                prev = current;
-                current = current.Next;
-            }
-
-            BenhNhan result = maxPrioNode.Data;
-
-            if (maxPrioNode == head)
-            {
-                head = head.Next;
-                if (head == null) tail = null;
-            }
-            else if (maxPrioNode == tail)
-            {
-                prevMaxPrioNode.Next = null;
-                tail = prevMaxPrioNode;
-            }
-            else
-            {
-                prevMaxPrioNode.Next = maxPrioNode.Next;
-            }
-
-            return result;
+            var res = head.Data;
+            head = head.Next;
+            if (head == null) tail = null;
+            return res;
         }
+
 
         // Xóa theo Mã số
         public bool RemoveByMaSo(string maSo)
@@ -489,19 +577,19 @@ namespace ChucNangChinh
         }
 
         //Cập nhật thông tin bệnh nhân
-        //public bool CapNhat(string maSoCu, BenhNhan bnMoi)
-        //{
-        //    Node current = head;
-        //    while (current != null)
-        //    {
-        //        if (current.Data.MaSo == maSoCu)
-        //        {
-        //            current.Data = bnMoi;
-        //            return true;
-        //        }
-        //        current = current.Next;
-        //    }
-        //    return false;
-        //}
+        public bool CapNhat(string maSoCu, BenhNhan bnMoi)
+        {
+            Node current = head;
+            while (current != null)
+            {
+                if (current.Data.MaSo == maSoCu)
+                {
+                    current.Data = bnMoi;
+                    return true;
+                }
+                current = current.Next;
+            }
+            return false;
+        }
     }
 }

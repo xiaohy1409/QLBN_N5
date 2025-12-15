@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.IO;
 
 namespace DangNHap
 {
@@ -18,102 +18,100 @@ namespace DangNHap
             InitializeComponent();
         }
 
+        private bool KiemTraRongVaDauCach(string text)
+        {
+            // 1. Kiem tra chuoi co NULL khong
+            if (text == null)
+                return false;
+            // 2. Kiem tra chuoi co rong khong
+            if (text.Length == 0)
+                return false;
+            // 3. Kiem tra chuoi co dau cach khong
+            for (int i = 0; i < text.Length; i++)
+            {
+                if (text[i] == ' ')
+                    return false;
+            }
+            return true;
+        }
+
         // Duong dan den file luu tru tai khoan "account.txt"
         private string path = Application.StartupPath + "\\account.txt";
 
         // Ham doc danh sach account tu file
         private List<(string username, string password)> ReadAccounts()
         {
-            var accounts = new List<(string, string)>();
+            List<(string username, string password)> accounts =
+                new List<(string username, string password)>();
 
             if (!File.Exists(path))
                 return accounts;
 
             string[] lines = File.ReadAllLines(path);
 
-            foreach (string line in lines)
+            for (int i = 0; i < lines.Length; i++)
             {
-                if (string.IsNullOrWhiteSpace(line)) continue;
-
+                string line = lines[i];
+                if (line == null || line.Length == 0)
+                continue;
                 string[] parts = line.Split(' ');
-                if (parts.Length != 2) continue;
-
+                if (parts.Length != 2)
+                    continue;
                 accounts.Add((parts[0], parts[1]));
             }
-
             return accounts;
         }
 
-        // Kiem tra chuoi khong chua dau cach
-        private bool CheckNoSpace(string text)
-        {
-            return !string.IsNullOrWhiteSpace(text) && !text.Contains(" ");
-        }
-
         // Kiem tra account da ton tai chua
-        private bool AccountExists(string username)
+        private bool KiemTraTaiKhoan(string username)
         {
-            var accounts = ReadAccounts();
-            return accounts.Any(a => a.username == username);
+            List<(string username, string password)> accounts = ReadAccounts();
+
+            for (int i = 0; i < accounts.Count; i++)
+            {
+                if (accounts[i].username == username)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         // Luu account moi vao file
-        private void SaveAccount(string username, string password)
+        private void WriteAccountToFile(string username, string password)
         {
             File.AppendAllText(path, username + " " + password + Environment.NewLine);
         }
-        /*
-        private void frmDangKy_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            DialogResult result = MessageBox.Show(
-                "Bạn có chắc muốn thoát không?",
-                "Thông báo",
-                MessageBoxButtons.YesNo,
-                MessageBoxIcon.Question
-            );
-
-            if (result == DialogResult.No)
-            {
-                e.Cancel = true;
-            }
-        }
-        */
 
         private void btnDangKy_Click(object sender, EventArgs e)
         {
             string username = txtTK.Text;
             string password = txtMK.Text;
 
-            // Kiem tra rong
-            if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
-            {
-                MessageBox.Show("Bạn nhập chưa đủ thông tin", "Thông báo");
-                return;
-            }
-
             // Kiem tra dau cach trong tai khoan
-            if (!CheckNoSpace(username))
+            if (!KiemTraRongVaDauCach(username))
             {
-                MessageBox.Show("Tên tài khoản không được chứa dấu cách", "Thông báo");
+                MessageBox.Show("Tên tài khoản không được rống hoặc chứa dấu cách", "Thông báo");
                 return;
             }
 
             // Kiem tra dau cach trong mat khau
-            if (!CheckNoSpace(password))
+            if (!KiemTraRongVaDauCach(password))
             {
-                MessageBox.Show("Mật khẩu không được chứa dấu cách", "Thông báo");
+                MessageBox.Show("Mật khẩu không được rỗng hoặc chứa dấu cách", "Thông báo");
                 return;
             }
 
             // Kiem tra trung tai khoan
-            if (AccountExists(username))
+            if (KiemTraTaiKhoan(username))
             {
                 MessageBox.Show("Tài khoản này đã tồn tại", "Thông báo");
                 return;
             }
 
             // Luu tai khoan
-            SaveAccount(username, password);
+            WriteAccountToFile(username, password);
             MessageBox.Show("Bạn đã đăng ký tài khoản thành công!", "Thông báo");
 
 
