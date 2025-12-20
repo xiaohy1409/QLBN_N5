@@ -52,10 +52,19 @@
     <Compile Include="frmChucNangChinh.Designer.cs">
       <DependentUpon>frmChucNangChinh.cs</DependentUpon>
     </Compile>
+    <Compile Include="frmLichSu.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmLichSu.Designer.cs">
+      <DependentUpon>frmLichSu.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="frmChucNangChinh.resx">
       <DependentUpon>frmChucNangChinh.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmLichSu.resx">
+      <DependentUpon>frmLichSu.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

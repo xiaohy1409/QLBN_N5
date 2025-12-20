@@ -14,7 +14,6 @@ namespace ChucNangChinh
         public frmChucNangChinh()
         {
             InitializeComponent();
-            KhoiTaoGiaoDien();
             CapNhatThongKe();
 
         }
@@ -22,99 +21,12 @@ namespace ChucNangChinh
         // Sự kiện Load Form
         private void frmChucNangChinh_Load(object sender, EventArgs e)
         {
-            KhoiTaoGiaoDien();
+            dtpNgayKham.MinDate = DateTime.Now;
             MoDuLieu();
             dgvDanhSach.ClearSelection();
         }
 
-        // Hàm thiết lập giao diện ban đầu
-        void KhoiTaoGiaoDien()
-        {
-            Color primaryColor = Color.FromArgb(0, 122, 204);
-            Color successColor = Color.ForestGreen;
-            Color dangerColor = Color.IndianRed;
-
-            this.BackColor = Color.WhiteSmoke;
-            this.Font = new Font("Segoe UI", 10, FontStyle.Regular);
-
-            cbbKhoa.Items.Clear();
-            cbbKhoa.Items.AddRange(new string[] { "Nội khoa", "Ngoại khoa", "Nhi khoa", "Cấp cứu", "Tai Mũi Họng" });
-            if (cbbKhoa.Items.Count > 0) cbbKhoa.SelectedIndex = 0;
-
-            dgvDanhSach.ColumnCount = 5;
-            dgvDanhSach.Columns[0].Name = "Mã Số";
-            dgvDanhSach.Columns[1].Name = "Họ Tên";
-            dgvDanhSach.Columns[2].Name = "Ngày Giờ";
-            dgvDanhSach.Columns[3].Name = "Khoa";
-            dgvDanhSach.Columns[4].Name = "Ưu Tiên";
-
-            dgvDanhSach.BackgroundColor = Color.White;
-            dgvDanhSach.BorderStyle = BorderStyle.None;
-            dgvDanhSach.EnableHeadersVisualStyles = false;
-            dgvDanhSach.ColumnHeadersDefaultCellStyle.BackColor = primaryColor;
-            dgvDanhSach.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
-            dgvDanhSach.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 10, FontStyle.Bold);
-            dgvDanhSach.ColumnHeadersHeight = 40;
-
-            dgvDanhSach.DefaultCellStyle.SelectionBackColor = Color.FromArgb(220, 230, 241);
-            dgvDanhSach.DefaultCellStyle.SelectionForeColor = Color.Black;
-            dgvDanhSach.DefaultCellStyle.Font = new Font("Segoe UI", 10);
-            dgvDanhSach.RowTemplate.Height = 30;
-            dgvDanhSach.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(245, 245, 245);
-            dgvDanhSach.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            dgvDanhSach.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvDanhSach.ReadOnly = true;
-
-            SetupButton(btnThem, "THÊM BỆNH NHÂN", primaryColor);
-            SetupButton(btnGoiKham, "GỌI KHÁM", successColor);
-            SetupButton(btnXoa, "XÓA", dangerColor);
-
-            ToolTip tt = new ToolTip();
-            tt.IsBalloon = true;
-            tt.ToolTipIcon = ToolTipIcon.Info;
-
-            // Giới hạn độ ưu tiên từ 0 đến 7
-            numUuTien.Minimum = 1;
-            numUuTien.Maximum = 7;
-            numUuTien.Value = 1;
-            numUuTien.ReadOnly = true;
-
-            // Tooltip mô tả chi tiết mức ưu tiên
-            tt.SetToolTip(numUuTien,
-                "1: Người bệnh trong tình trạng cấp cứu\n" +
-                "2: Trẻ em dưới 06 tuổi\n" +
-                "3: Phụ nữ có thai\n" +
-                "4: Người khuyết tật đặc biệt nặng\n" +
-                "5: Người khuyết tật nặng\n" +
-                "6: Người từ đủ 75 tuổi trở lên\n" +
-                "7: Người có công với cách mạng"
-            );
-
-            tt.SetToolTip(cbbKhoa, "Chọn khoa chuyên môn cần khám");
-            tt.SetToolTip(btnGoiKham, "Hệ thống sẽ gọi bệnh nhân có độ ưu tiên cao nhất");
-            tt.SetToolTip(btnSua, "Chọn một dòng trong danh sách rồi bấm nút này để sửa thông tin");
-
-            // Cấu hình thời gian chỉ cho chọn ngày giờ sau hiện tại
-            dtpNgayKham.Format = DateTimePickerFormat.Custom;
-            dtpNgayKham.CustomFormat = "dd/MM/yyyy HH:mm";
-            dtpNgayKham.ShowUpDown = true;
-            // Đặt MinDate là ngày giờ hiện tại
-            dtpNgayKham.MinDate = DateTime.Now;
-        }
-
-        // Hàm định dạng nút bấm
-        void SetupButton(Button btn, string text, Color bg)
-        {
-            btn.Text = text;
-            btn.BackColor = bg;
-            btn.ForeColor = Color.White;
-            btn.FlatStyle = FlatStyle.Flat;
-            btn.FlatAppearance.BorderSize = 0;
-            btn.Font = new Font("Segoe UI", 10, FontStyle.Bold);
-            btn.Cursor = Cursors.Hand;
-        }
-
-        // Hàm hiển thị dữ liệu lên DataGridView
+         // Hàm hiển thị dữ liệu lên DataGridView
         void HienThiLenBang(string tuKhoa = "")
         {
             dgvDanhSach.Rows.Clear();
@@ -184,8 +96,8 @@ namespace ChucNangChinh
 
                 MessageBox.Show("Cập nhật thông tin thành công!");
 
-                maDangSua = "";          
-                txtMa.Enabled = true;     
+                maDangSua = "";
+                txtMa.Enabled = true;
                 btnThem.Text = "THÊM BỆNH NHÂN";
                 btnThem.BackColor = Color.FromArgb(0, 122, 204);
             }
@@ -197,7 +109,7 @@ namespace ChucNangChinh
             txtTen.Clear();
             dtpNgayKham.Value = DateTime.Now;
             numUuTien.Value = 0;
-            daThayDoiDuLieu = true; 
+            daThayDoiDuLieu = true;
         }
 
         private void btnGoiKham_Click(object sender, EventArgs e)
@@ -221,6 +133,9 @@ namespace ChucNangChinh
                 lblChiTietKhoa.Text = bnDuocGoi.Khoa;
                 lblChiTietUuTien.Text = bnDuocGoi.DoUuTien.ToString();
 
+                // Lưu lịch sử khám vào file
+                LuuLichSu(bnDuocGoi);
+
                 HienThiLenBang(txtTimKiem.Text);
                 CapNhatThongKe();
                 daThayDoiDuLieu = true;
@@ -228,6 +143,23 @@ namespace ChucNangChinh
                 dgvDanhSach.CurrentCell = null;
 
                 MessageBox.Show($"Mời bệnh nhân: {bnDuocGoi.HoTen} vào phòng khám!", "Thông báo gọi khám");
+            }
+        }
+
+        // Lưu thông tin bệnh nhân đã được gọi vào file lịch sử (append)
+        void LuuLichSu(BenhNhan bn)
+        {
+            try
+            {
+                using (StreamWriter sw = new StreamWriter("history.txt", true))
+                {
+                    string dong = $"{DateTime.Now:dd/MM/yyyy HH:mm}|{bn.MaSo}|{bn.HoTen}|{bn.NgayGio:dd/MM/yyyy HH:mm}|{bn.Khoa}|{bn.DoUuTien}";
+                    sw.WriteLine(dong);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi khi lưu lịch sử khám: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -293,7 +225,7 @@ namespace ChucNangChinh
         void CapNhatThongKe()
         {
             int tongSo = 0;
-            int uuTienCao = 1;
+            int uuTienCao = 0;
 
             Node current = hangDoi.GetHead();
             while (current != null)
@@ -336,8 +268,7 @@ namespace ChucNangChinh
             daThayDoiDuLieu = false;
         }
 
-        //hàm mở file và hiển thị lên bảng
-
+        //Hàm mở file và hiển thị lên bảng
         private void MoDuLieu()
         {
             if (!File.Exists("data.txt"))
@@ -364,6 +295,10 @@ namespace ChucNangChinh
                     hangDoi.Enqueue(bn);
                 }
             }
+
+
+            hangDoi.SapXepDanhSach();
+
             HienThiLenBang(txtTimKiem.Text);
             CapNhatThongKe();
 
@@ -377,7 +312,13 @@ namespace ChucNangChinh
         // Sự kiện mở file
         private void btnMo_Click(object sender, EventArgs e)
         {
-           MoDuLieu();
+            MoDuLieu();
+        }
+
+        private void btnXemLichSu_Click(object sender, EventArgs e)
+        {
+            frmLichSu f = new frmLichSu();
+            f.ShowDialog(this);
         }
 
         private void cbbKhoa_SelectedIndexChanged(object sender, EventArgs e)
@@ -392,6 +333,8 @@ namespace ChucNangChinh
                 numUuTien.Enabled = true;
             }
         }
+
+        // chức năng sửa
 
         private void btnSua_Click(object sender, EventArgs e)
         {
@@ -428,17 +371,17 @@ namespace ChucNangChinh
             }
             else
             {
-                dtpNgayKham.Value = DateTime.Now; 
+                dtpNgayKham.Value = DateTime.Now;
             }
 
             cbbKhoa.Text = row.Cells[3].Value.ToString();
             numUuTien.Value = int.Parse(row.Cells[4].Value.ToString());
 
-            maDangSua = txtMa.Text; 
-            txtMa.Enabled = false;  
+            maDangSua = txtMa.Text;
+            txtMa.Enabled = false;
 
             btnThem.Text = "CẬP NHẬT";
-            btnThem.BackColor = Color.Orange; 
+            btnThem.BackColor = Color.Orange;
         }
 
         private void frmChucNangChinh_Shown(object sender, EventArgs e)
@@ -492,23 +435,52 @@ namespace ChucNangChinh
         }
         private bool HigherPrio(BenhNhan a, BenhNhan b)
         {
-            // TRUE thì người a có độ ưu tiên cao hơn người b
-            // FALSE thì người b có độ ưu tiên cao hơn người a
+            // TRUE: a đứng trước b
+            // FALSE: b đứng trước a
 
-            // 1. So sánh ngày
-            if (a.NgayGio.Date < b.NgayGio.Date) return true;
-            if (a.NgayGio.Date > b.NgayGio.Date) return false;
+            // 1. So sánh độ ưu tiên (QUAN TRỌNG NHẤT)
+            int Rank(BenhNhan x)
+            {
+                if (x.DoUuTien == 1) return 0;  
+                if (x.DoUuTien == 0) return 100; 
+                return 10 + x.DoUuTien;          
+            }
 
-            // 2. So sánh độ ưu tiên
-            if (a.DoUuTien < b.DoUuTien) return true;
-            if (a.DoUuTien > b.DoUuTien) return false;
+            int ra = Rank(a);
+            int rb = Rank(b);
 
-            // 3. So sánh giờ, phút, giây
-            if (a.NgayGio.TimeOfDay < b.NgayGio.TimeOfDay) return true;
-            if (a.NgayGio.TimeOfDay > b.NgayGio.TimeOfDay) return false;
+            if (ra < rb) return true;
+            if (ra > rb) return false;
 
-            // 4. Bằng nhau hết thì FIFO
+            // 2. Nếu cùng mức ưu tiên -> so sánh ngày + giờ (sớm hơn được gọi trước)
+            if (a.NgayGio < b.NgayGio) return true;
+            if (a.NgayGio > b.NgayGio) return false;
+
+            // 3. Hoàn toàn bằng nhau → FIFO
             return false;
+        }
+
+        // Sắp xếp danh sách bệnh nhân theo HigherPrio: so sánh ngày giờ trước rồi so sánh độ ưu tiên
+        public void SapXepDanhSach()
+        {
+            if (head == null || head.Next == null)
+                return;
+
+            for (Node p = head; p != null; p = p.Next)
+            {
+                for (Node q = p.Next; q != null; q = q.Next)
+                {
+                    BenhNhan a = q.Data;
+                    BenhNhan b = p.Data;
+                    // Nếu a nên đứng trước b thì đổi chỗ
+                    if (HigherPrio(a, b))
+                    {
+                        BenhNhan temp = p.Data;
+                        p.Data = q.Data;
+                        q.Data = temp;
+                    }
+                }
+            }
         }
 
         // Thêm vào hàng đợi (Enqueue)
@@ -518,6 +490,7 @@ namespace ChucNangChinh
             if (head == null)
             {
                 head = tail = newNode;
+                // ensure order
                 return;
             }
             if (HigherPrio(newNode.Data, head.Data))
@@ -537,6 +510,9 @@ namespace ChucNangChinh
             newNode.Next = current.Next;
             current.Next = newNode;
             if (newNode.Next == null) tail = newNode;
+
+            // Keep the list sorted by priority to guarantee DequeuePriority follows HigherPrio
+            SapXepDanhSach();
         }
 
         // Lấy ra theo độ ưu tiên (DequeuePriority)
@@ -591,5 +567,6 @@ namespace ChucNangChinh
             }
             return false;
         }
+
     }
 }
